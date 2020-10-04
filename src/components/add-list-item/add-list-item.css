@@ -1,0 +1,17 @@
+.add-business {
+  display: flex;
+  margin-top: 10px;
+}
+
+.add-busines-icon {
+  margin-left: auto;
+  margin-right: auto;
+  background-color: lightblue;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.fa-plus-square {
+  margin-left: 10px;
+}
