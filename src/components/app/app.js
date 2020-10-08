@@ -11,19 +11,24 @@ class App extends React.Component {
 
   state = {
     todoData: [
-      {label: 'Drink Coffee', important: false, id: 1},
-      {label: 'Make Awesome App', important: true, id: 2},
-      {label: 'Have a lunch', important: false, id: 3}
-    ],
+      this.createTodoItem(`Drink Coffe`),
+      this.createTodoItem(`Make Awesome App`),
+      this.createTodoItem(`Have a lunch`),
+    ]
+
   }
 
-  // добавляет новое дело в список дел (изменяет массив todoData)
-  addItem = (text) => {
-    const newItem = {
-      label: text,
+  createTodoItem(label) {
+    return {
+      label,
       important: false,
+      done: false,
       id: nanoid(10)
     }
+  }
+
+  addItem = (text) => {
+    const newItem = this.createTodoItem(text);
     this.setState((currentState) => {
       return {
         todoData: [...currentState.todoData, newItem]
@@ -44,16 +49,58 @@ class App extends React.Component {
     })
   };
 
+  onToggleImportant = (id) => {
+    this.setState(({todoData}) => {
+      const index = todoData.findIndex((element) => element.id === id);
+      // 1. update object
+      const oldItem = todoData[index];
+      const newItem = {...oldItem, important: !oldItem.important};
+      // 2. construct new array
+      const newArray = [
+        ...todoData.slice(0, index),
+        newItem,
+        ...todoData.slice(index + 1)
+      ]
+      return {
+        todoData: newArray
+      };
+    });
+  };
+
+  onToggleDone = (id) => {
+    this.setState(({todoData}) => {
+      const index = todoData.findIndex((element) => element.id === id);
+      // 1. update object
+      const oldItem = todoData[index];
+      const newItem = {...oldItem, done: !oldItem.done};
+      // 2. construct new array
+      const newArray = [
+        ...todoData.slice(0, index),
+        newItem,
+        ...todoData.slice(index + 1)
+      ]
+      return {
+        todoData: newArray
+      };
+    });
+  };
+
   render() {
+    const {todoData} = this.state;
+    const doneCount = todoData.filter((data) => data.done).length;
+    const todoCount = todoData.length - doneCount;
+
     return (
       <div className="todo-app">
-        <AppHeader toDo={1} done={3} />
+        <AppHeader toDo={todoCount} done={doneCount} />
         <div className="top-panel d-flex">
           <SearchPanel />
           <ItemStatusFilter />
         </div>
-        <TodoList todos={this.state.todoData}
+        <TodoList todos={todoData}
           onDeleted={this.deleteItem}
+          onToggleImportant={this.onToggleImportant}
+          onToggleDone={this.onToggleDone}
         />
         <AddListItem onItemAdded={this.addItem} />
       </div>
